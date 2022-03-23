@@ -1,8 +1,11 @@
-import { configureStore } from '@reduxjs/toolkit';
-import counterReducer from '../features/counter/counterSlice';
+import { configureStore } from "@reduxjs/toolkit";
+import postsReducer from '../features/posts/postsSlice';
 
-export const store = configureStore({
-  reducer: {
-    counter: counterReducer,
-  },
-});
+//говорим REdux, что на высшем уровне состояния нам нужно поле, названное posts 
+//и все данные для state.posts будут обновляться с помощью функции postsReducer 
+//когда действия будут отправляться
+export default configureStore({
+    reducer: {
+        posts: postsReducer
+    }
+})
