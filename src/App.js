@@ -5,15 +5,23 @@ import {
   Route,
   Navigate,
 } from 'react-router-dom'
-import { AddPostForm } from './features/posts/AddPostForm'
-import { PostsList } from './features/posts/PostsList'
+import Posts from './features/posts/Posts'
+import {SinglePostPage} from './features/posts/SinglePostPage'
+import { Navbar } from './app/Navbar'
+import {EditPostForm} from './features/posts/EditPostForm'
 
 function App() {
   return (
-    <React.Fragment>
-      <AddPostForm />
-      <PostsList />
-    </React.Fragment>
+    <Router>
+      <Navbar />
+      <div className="App">
+        <Routes>
+          <Route exact path="/posts/:postId" element={<SinglePostPage />} />
+          <Route exact path="/editPost/:postId" element={<EditPostForm />} />
+          <Route path="/" element={<Posts />} />
+        </Routes>
+      </div>
+    </Router>
   )
 }
 
