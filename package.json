@@ -43,5 +43,8 @@
     "@types/faker": "^6.6.9",
     "faker": "^5.5.3",
     "msw": "^0.39.2"
+  },
+  "msw": {
+    "workerDirectory": "public"
   }
 }

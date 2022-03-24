@@ -4,6 +4,12 @@ import './index.css'
 import App from './App'
 import { Provider } from 'react-redux'
 import store from './app/store'
+import { fetchUsers } from './features/users/userSlice'
+import { worker } from './api/server'
+
+worker.start().then(start);
+
+store.dispatch(fetchUsers())
 
 async function start() {
   ReactDOM.render(
@@ -15,5 +21,3 @@ async function start() {
     document.getElementById('root')
   )
 }
-
-start()
