@@ -46,7 +46,6 @@ export const PostsList = () => {
             .slice()
             .sort((a, b) => b.date.localeCompare(a.date));
 
-        console.log(content);
         content = orderedPosts.map(post => (
             <PostExcerpt key={post.id} post={post} />
         ));
