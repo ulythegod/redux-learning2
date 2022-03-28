@@ -1,13 +1,20 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useSelector, useDispatch  } from "react-redux";//реакт компоненты могут читать данные из Redux хранилища, используя хук useSelector 
 import {Link} from 'react-router-dom';
 import { PostAuthor } from "./PostAuthor";
 import {TimeAgo} from './TimeAgo';
-import { selectAllPosts, fetchPosts } from "./postsSlice";
+import {
+    selectAllPosts,
+    fetchPosts,
+    selectPostIds,
+    selectPostById
+} from './postsSlice';
 import {Spinner} from '../../components/Spinner';
 import { ReactionButtons } from "./ReactionButtons";
+import { useGetPostsQuery } from "../../api/apiSlice";
+import classnames from "classnames";
 
-const PostExcerpt = ({post}) => {
+const PostExcerpt = ({ post }) => {
     return (
         <article>
             <h3>{post.title}</h3>
@@ -25,37 +32,46 @@ const PostExcerpt = ({post}) => {
 }
 
 export const PostsList = () => {
-    const dispatch = useDispatch();
-    const posts = useSelector(selectAllPosts);
+    const {
+        data: posts = [],
+        isLoding,
+        isFetching,
+        isSuccess,
+        isErrror,
+        error,
+        refetch
+    } = useGetPostsQuery();
 
-    const postStatus = useSelector(state => state.posts.status);
-    const error = useSelector(state => state.posts.error);
+    const sortedPosts = useMemo(() => {
+        const sortedPosts = posts.slice();
+        //сортировка постов в хронологическом порядке
+        sortedPosts.sort((a, b) => b.date.localeCompare(a.date));
 
-    useEffect(() => {
-        if (postStatus === 'idle') {
-            dispatch(fetchPosts());
-        }
-    }, [postStatus, dispatch]);
+        return sortedPosts;
+    }, [posts])
 
     let content;
     
-    if (postStatus === 'loading') {
+    if (isLoding) {
         content = <Spinner text="Loading..." />
-    } else if (postStatus === 'succeeded') {
-        const orderedPosts = posts
-            .slice()
-            .sort((a, b) => b.date.localeCompare(a.date));
-
-        content = orderedPosts.map(post => (
+    } else if (isSuccess) {
+        const renderedPosts = sortedPosts.map(post => (
             <PostExcerpt key={post.id} post={post} />
-        ));
-    } else if (postStatus === 'failed') {
+        ))
+      
+        const containerClassname = classnames('posts-container', {
+            disabled: isFetching
+        })
+      
+        content = <div className={containerClassname}>{renderedPosts}</div>
+    } else if (isErrror) {
         content = <div>{error}</div>
     }
 
     return (
         <section className="posts-list">
             <h2>Posts</h2>
+            <button onClick={refetch}>Refetch Posts</button>
             {content}
         </section>
     )

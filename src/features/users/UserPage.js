@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { useParams } from 'react-router-dom';
 
 import { selectUserById } from '../users/userSlice'
-import { selectAllPosts } from '../posts/postsSlice'
+import { selectPostsByUser } from '../posts/postsSlice'
 
 export const UserPage = () => {
   const { userId } = useParams()

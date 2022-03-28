@@ -1,5 +1,9 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, createEntityAdapter } from "@reduxjs/toolkit";
 import { client } from "../../api/client";
+
+const notificationsAdapter = createEntityAdapter({
+  sortComparer: (a, b) => b.date.localeCompare(a.date)
+})
 
 /**
  * второй аргумент пейлоад создателя - это объект thunkAPI, у него есть несколько полезных функций и информации.
@@ -27,28 +31,28 @@ import { client } from "../../api/client";
   
   const notificationsSlice = createSlice({
     name: 'notifications',
-    initialState: [],
+    initialState: notificationsAdapter.getInitialState(),
     reducers: {
         allNotificationsRead(state, action) {
-            state.forEach(notification => {
+            Object.values(state.entities).forEach(notification => {
                 notification.read = true
-            })
+            });
         }
     },
     extraReducers: {
-      [fetchNotifications.fulfilled]: (state, action) => {
-        state.push(...action.payload)
-        state.forEach(notification => {
-            notification.isNew = !notification.read
-        })
-        // Sort with newest first
-        state.sort((a, b) => b.date.localeCompare(a.date))
-      }
+        [fetchNotifications.fulfilled]: (state, action) => {
+            notificationsAdapter.upsertMany(state, action.payload)
+            Object.values(state.entities).forEach(notification => {
+                // Any notifications we've read are no longer new
+                notification.isNew = !notification.read
+            })
+        }
     }
   })
   
   export default notificationsSlice.reducer
   
-  export const selectAllNotifications = state => state.notifications
+  export const { selectAll: selectAllNotifications } =
+  notificationsAdapter.getSelectors(state => state.notifications);
 
   export const {allNotificationsRead} = notificationsSlice.actions
