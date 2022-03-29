@@ -48,7 +48,7 @@ export const PostsList = () => {
         sortedPosts.sort((a, b) => b.date.localeCompare(a.date));
 
         return sortedPosts;
-    }, [posts])
+    }, [posts]);
 
     let content;
     

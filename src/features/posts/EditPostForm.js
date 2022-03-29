@@ -4,25 +4,26 @@ import {useNavigate} from 'react-router-dom';
 import { postUpdated } from './postsSlice';
 import { useParams } from 'react-router-dom';
 import { selectPostById } from "./postsSlice";
+import { useGetPostQuery, useEditPostMutation } from '../../api/apiSlice';
 
 export const EditPostForm = () => {
     const { postId } = useParams();
 
-    const post = useSelector(state => selectPostById(state, postId));
+    const { data: post } = useGetPostQuery(postId)
+    const [updatePost, { isLoading }] = useEditPostMutation()
 
     const [title, setTitle] = useState(post.title);
     const [content, setContent] = useState(post.content);
 
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
+    const history = useNavigate();
 
     const onTitleChanged = e => setTitle(e.target.value);
     const onContentChanged = e => setContent(e.target.value);
 
     const onSavePostClicked = () => {
         if (title && content) {
-            dispatch(postUpdated({id: postId, title: title, content: content}));
-            navigate(`/posts/${postId}`);
+            updatePost({ id: postId, title, content });
+            history(`/posts/${postId}`);
         }
     }
 

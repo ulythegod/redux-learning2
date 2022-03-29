@@ -6,10 +6,11 @@ import { Provider } from 'react-redux'
 import store from './app/store'
 import { fetchUsers } from './features/users/userSlice'
 import { worker } from './api/server'
+import { extendedApiSlice } from './features/users/userSlice'
 
 worker.start().then(start);
 
-store.dispatch(fetchUsers())
+store.dispatch(extendedApiSlice.endpoints.getUsers.initiate())
 
 async function start() {
   ReactDOM.render(
